@@ -21,3 +21,10 @@
     padding: 15px 40px;
     font-size: 16px;
 }
+
+.create-event-wide {
+    display: block !important;
+    width: 100% !important;
+    max-width: 500px;
+    margin: 0 auto !important;
+}

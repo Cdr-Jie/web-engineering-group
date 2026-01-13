@@ -1,10 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="my-events-header">
-    <h2>📅 My Events</h2>
-    <a href="{{ route('events.create') }}" class="btn">Create Event</a>
-</div>
+<h2>📅 My Events</h2>
 
 @if($events->isEmpty())
     <p>You haven’t created any events yet.</p>
@@ -38,7 +35,7 @@
     </div>
 
     <div class="create-event-button-bottom">
-        <a href="{{ route('events.create') }}" class="btn">Create New Event</a>
+        <a href="{{ route('events.create') }}" class="btn create-event-wide">Create New Event</a>
     </div>
 @endif
 @endsection

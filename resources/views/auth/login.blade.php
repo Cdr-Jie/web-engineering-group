@@ -55,6 +55,6 @@
             </div>
         </section>
 
-        <footer><hr>©CHAN|BI23110228</footer>
+        @include('includes.footer')
     </body>
 </html>

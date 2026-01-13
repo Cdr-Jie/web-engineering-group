@@ -35,9 +35,10 @@
                 <div style="margin-bottom: 20px;">
                     <p><strong>Current Posters:</strong></p>
                     <div class="events-images-container">
-                        @foreach($event->posters as $poster)
-                            <div class="event-image-item">
+                        @foreach($event->posters as $index => $poster)
+                            <div class="event-image-item" style="position: relative;">
                                 <img src="{{ asset('storage/' . $poster) }}" alt="Event Poster" class="event-poster">
+                                <button type="button" class="poster-delete-btn" onclick="removePoster(this, {{ $index }})" style="position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 14px;">Delete</button>
                             </div>
                         @endforeach
                     </div>
@@ -146,8 +147,30 @@
             <button type="submit">Update Event</button>
             <a href="{{ route('events.my') }}" class="btn" style="display: inline-block; text-decoration: none;">Cancel</a>
         </div>
+
+        <!-- Hidden input to track deleted poster indices -->
+        <input type="hidden" id="deleted_poster_indices" name="deleted_poster_indices" value="">
     </form>
 </section>
+
+<script>
+    function removePoster(button, index) {
+        if (confirm('Are you sure you want to delete this poster?')) {
+            const container = button.parentElement;
+            container.style.opacity = '0.5';
+            container.style.pointerEvents = 'none';
+            button.textContent = 'Removing...';
+            
+            // Track deleted poster index
+            const deletedInput = document.getElementById('deleted_poster_indices');
+            const deletedIndices = deletedInput.value ? deletedInput.value.split(',') : [];
+            if (!deletedIndices.includes(index.toString())) {
+                deletedIndices.push(index);
+            }
+            deletedInput.value = deletedIndices.join(',');
+        }
+    }
+</script>
 
 </body>
 </html>

@@ -112,25 +112,39 @@ class EventController extends Controller
             'remarks' => 'nullable|string',
             'posters' => 'nullable|array|max:4',
             'posters.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'deleted_poster_indices' => 'nullable|string',
         ]);
+
+        // Handle deleted posters
+        $currentPosters = $event->posters ?? [];
+        if (!empty($data['deleted_poster_indices'])) {
+            $deletedIndices = array_map('intval', explode(',', $data['deleted_poster_indices']));
+            
+            // Delete files from storage
+            foreach ($deletedIndices as $index) {
+                if (isset($currentPosters[$index])) {
+                    Storage::disk('public')->delete($currentPosters[$index]);
+                    unset($currentPosters[$index]);
+                }
+            }
+            
+            // Re-index the array
+            $currentPosters = array_values($currentPosters);
+        }
 
         // Handle new poster uploads (if any)
         if ($request->hasFile('posters')) {
-            // Delete old posters
-            foreach ($event->posters ?? [] as $poster) {
-                Storage::disk('public')->delete($poster);
-            }
-
             $posterPaths = [];
 
-            if ($request->hasFile('posters')) {
-                foreach ($request->file('posters') as $file) {
-                    $posterPaths[] = $file->store('events', 'public');
-                }
+            foreach ($request->file('posters') as $file) {
+                $posterPaths[] = $file->store('events', 'public');
             }
 
-
-            $data['posters'] = $posterPaths;
+            // Merge remaining current posters with new ones
+            $data['posters'] = array_merge($currentPosters, $posterPaths);
+        } else {
+            // Keep remaining current posters
+            $data['posters'] = $currentPosters;
         }
 
         $event->update($data);
