@@ -1,0 +1,37 @@
+@extends('layouts.app')
+
+@section('content')
+<h2>📅 My Events</h2>
+
+@if($events->isEmpty())
+    <p>You haven’t created any events yet.</p>
+@else
+    <div class="dashboard-grid">
+        @foreach($events as $event)
+
+            <div class="dashboard-card">
+                <h3>{{ $event->name }}</h3>
+
+                {{-- Event poster preview --}}
+                @if(!empty($event->posters) && count($event->posters) > 0)
+                    <img src="{{ asset('storage/' . $event->posters[0]) }}" 
+                        alt="{{ $event->name }} Poster" 
+                        style="width:100%; max-height:200px; object-fit:cover; margin-bottom:10px;">
+                @endif
+
+                <p>{{ $event->date->format('d M Y') }} | {{ $event->time }}</p>
+                <p>{{ $event->venue }}</p>
+
+
+                <a href="{{ route('events.edit', $event) }}" class="btn">Edit</a>
+
+                <form action="{{ route('events.destroy', $event) }}" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <button class="btn danger">Delete</button>
+                </form>
+            </div>
+        @endforeach
+    </div>
+@endif
+@endsection
