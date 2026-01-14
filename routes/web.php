@@ -8,7 +8,8 @@ use App\Http\Controllers\AdminController;
 
 
 Route::get('/', function () {
-    return view('index');
+    $events = \App\Models\Event::where('visibility', 'public')->get();
+    return view('index', ['events' => $events]);
 }) -> name('index');
 
 // Registration form
@@ -45,6 +46,8 @@ Route::get('/my-events', action: fn() => view('events.my'))->name('events.my');
     Route::get('/events/create', [EventController::class, 'create'])->name('events.create');
     Route::post('/events', [EventController::class, 'store'])->name('events.store');
     Route::get('/events/{event}', [EventController::class, 'show'])->name('events.show');
+    Route::get('/events/{event}/participants', [EventController::class, 'participants'])->name('events.participants');
+    Route::post('/events/{event}/registrations/{registration}/attendance', [EventController::class, 'markAttendance'])->name('events.markAttendance');
     Route::get('/events/{event}/edit', [EventController::class, 'edit'])->name('events.edit');
     Route::put('/events/{event}', [EventController::class, 'update'])->name('events.update');
     Route::delete('/events/{event}', [EventController::class, 'destroy'])->name('events.destroy');
@@ -98,10 +101,4 @@ Route::get('/my-events', action: fn() => view('events.my'))->name('events.my');
         Route::get('/registrations/{registration}/edit', [AdminController::class, 'editRegistration'])->name('admin.registration.edit');
         Route::put('/registrations/{registration}', [AdminController::class, 'updateRegistration'])->name('admin.registration.update');
         Route::delete('/registrations/{registration}', [AdminController::class, 'destroyRegistration'])->name('admin.registration.destroy');
-
-        // Test route for pagination
-        Route::get('/test', function () {
-            $items = collect(range(1, 100))->paginate(10);
-            return view('admin.test', compact('items'));
-        })->name('admin.test');
     });

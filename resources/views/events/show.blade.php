@@ -2,21 +2,7 @@
 
 @section('content')
 <div style="margin-top: 30px; margin-bottom: 30px;">
-    @php
-        $backUrl = url()->previous();
-        $backText = 'Events';
-        
-        // Determine back button text and URL based on referrer
-        if (str_contains($backUrl, '/dashboard')) {
-            $backText = 'Dashboard';
-        } elseif (str_contains($backUrl, '/my-registrations')) {
-            $backText = 'My Registrations';
-        } elseif (str_contains($backUrl, '/my-events')) {
-            $backText = 'My Events';
-        }
-    @endphp
-    
-    <a href="{{ $backUrl }}" class="btn" style="margin-bottom: 20px;">← Back to {{ $backText }}</a>
+    <a href="{{ route('events.index') }}" class="btn" style="margin-bottom: 20px;">← Back to Events</a>
 
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
@@ -41,6 +27,11 @@
         <h1 style="margin-bottom: 10px;">{{ $event->name }}</h1>
         <p style="color: #666; font-size: 0.95em; margin-bottom: 20px;">
             <strong>Type:</strong> {{ $event->type }} | <strong>Mode:</strong> {{ $event->mode }}
+            @if($event->visibility === 'private')
+                | <span style="background: #e74c3c; color: white; padding: 4px 10px; border-radius: 4px; font-size: 0.85em; font-weight: bold;">🔒 Private (University Only)</span>
+            @else
+                | <span style="background: #27ae60; color: white; padding: 4px 10px; border-radius: 4px; font-size: 0.85em; font-weight: bold;">🌐 Public</span>
+            @endif
         </p>
 
         {{-- Key Details Grid --}}
@@ -97,26 +88,26 @@
                     <button type="submit" class="btn" style="background: #e74c3c;" 
                             onclick="return confirm('Are you sure you want to delete this event?')">Delete Event</button>
                 </form>
-            @else
-                {{-- Registration Actions --}}
-                @php
-                    $registered = $event->registrations()->where('user_id', Auth::id())->exists();
-                @endphp
+            @endif
 
-                @if($registered)
-                    <form action="{{ route('events.unregister', $event->id) }}" method="POST" style="display:inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn" style="background: #e74c3c;" 
-                                onclick="return confirm('Are you sure you want to unregister from this event?')">Unregister</button>
-                    </form>
-                @else
-                    <button class="btn" style="background: #27ae60; color: white; padding: 12px 24px; font-weight: bold;" 
-                            onclick="openRegisterModal({{ $event->id }}, '{{ $event->name }}', '{{ $event->fee }}')">
-                        Register for Event
-                    </button>
-                @endif
-            @endforelse
+            {{-- Registration Actions --}}
+            @php
+                $registered = $event->registrations()->where('user_id', Auth::id())->exists();
+            @endphp
+
+            @if($registered)
+                <form action="{{ route('events.unregister', $event->id) }}" method="POST" style="display:inline;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn" style="background: #e74c3c;" 
+                            onclick="return confirm('Are you sure you want to unregister from this event?')">Unregister</button>
+                </form>
+            @else
+                <button class="btn" style="background: #2c3e50; color: white; padding: 12px 24px; font-weight: bold;" 
+                        onclick="openRegisterModal({{ $event->id }}, '{{ $event->name }}', '{{ $event->fee }}')">
+                    Register for Event
+                </button>
+            @endif
         </div>
 
     </div>

@@ -24,6 +24,38 @@
                 </form>
             </div>
 
+            <!-- Admin Profile Card -->
+            @if($admin)
+                <div class="card" style="margin-bottom: 30px; background: linear-gradient(135deg, #f0fdfb 0%, #ffffff 100%); border-left: 4px solid #00d9a3;">
+                    <div style="display: grid; grid-template-columns: auto 1fr auto; gap: 20px; align-items: center;">
+                        <!-- Profile Icon -->
+                        <div style="display: flex; align-items: center; justify-content: center; width: 60px; height: 60px; background: linear-gradient(135deg, #00d9a3 0%, #1aa573 100%); border-radius: 50%; color: white; font-size: 28px;">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        
+                        <!-- Profile Info -->
+                        <div>
+                            <h3 style="margin: 0 0 10px 0; color: #333;">{{ $admin->name }}</h3>
+                            <p style="margin: 5px 0; color: #666; font-size: 14px;">
+                                <i class="fas fa-envelope" style="color: #00d9a3; margin-right: 8px;"></i>{{ $admin->email }}
+                            </p>
+                            <p style="margin: 5px 0; color: #666; font-size: 14px;">
+                                <i class="fas fa-phone" style="color: #00d9a3; margin-right: 8px;"></i>{{ $admin->phone ?? 'N/A' }}
+                            </p>
+                           
+                        </div>
+                        
+                        <!-- Member Since -->
+                        <div style="text-align: right;">
+                            <p style="margin: 0; color: #666; font-size: 12px;">Member Since</p>
+                            <p style="margin: 5px 0 0 0; color: #00d9a3; font-size: 16px; font-weight: 600;">
+                                {{ $admin->created_at->format('M Y') }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             <!-- Success Message -->
             @if(session('success'))
                 <div class="alert alert-success">

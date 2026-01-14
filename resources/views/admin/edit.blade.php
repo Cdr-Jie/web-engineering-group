@@ -71,6 +71,18 @@
                         </select>
                     </div>
 
+                    <!-- Password -->
+                    <div style="margin-bottom: 20px;">
+                        <label for="password" style="display: block; margin-bottom: 8px; color: #333; font-weight: 600;">New Password</label>
+                        <input type="password" id="password" name="password" placeholder="Leave blank to keep current password" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 15px; transition: all 0.3s;" onfocus="this.style.borderColor='#00d9a3'; this.style.boxShadow='0 0 0 4px rgba(0, 217, 163, 0.1)'" onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'">
+                    </div>
+
+                    <!-- Confirm Password -->
+                    <div style="margin-bottom: 20px;">
+                        <label for="password_confirmation" style="display: block; margin-bottom: 8px; color: #333; font-weight: 600;">Confirm Password</label>
+                        <input type="password" id="password_confirmation" name="password_confirmation" placeholder="Confirm new password" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 15px; transition: all 0.3s;" onfocus="this.style.borderColor='#00d9a3'; this.style.boxShadow='0 0 0 4px rgba(0, 217, 163, 0.1)'" onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'">
+                    </div>
+
                     <!-- Buttons -->
                     <div style="display: flex; gap: 10px; margin-top: 30px;">
                         <button type="submit" style="flex: 1; padding: 14px; background: linear-gradient(135deg, #00d9a3 0%, #1aa573 100%); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(0, 217, 163, 0.3);" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">

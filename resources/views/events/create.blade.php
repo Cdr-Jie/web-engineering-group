@@ -126,9 +126,17 @@
             <textarea name="remarks" rows="2">{{ old('remarks') }}</textarea>
         </label>
 
-        
+        <!-- Visibility -->
+        <label>
+            Event Visibility *
+            <select name="visibility" required>
+                <option value="">-- Select Visibility --</option>
+                <option value="public" {{ old('visibility') == 'public' ? 'selected' : '' }}>Public (Everyone)</option>
+                <option value="private" {{ old('visibility') == 'private' ? 'selected' : '' }}>Private (University Only)</option>
+            </select>
+        </label>
 
-        <!-- Buttons -->
+                <!-- Buttons -->
         <button type="submit" class="btn btn-primary">Create Event</button>
         <a href="{{ route('events.index') }}" class="btn btn-secondary">Back</a>
     </form>

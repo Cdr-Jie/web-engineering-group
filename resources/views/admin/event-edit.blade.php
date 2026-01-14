@@ -127,10 +127,18 @@
                 Fee <span style="color:red;">*</span>
                 <input type="text" name="fee" value="{{ old('fee', $event->fee) }}" placeholder="e.g., Free or RM 50" required>
             </label>
-
             <label>
                 Remarks
                 <textarea name="remarks" rows="3">{{ old('remarks', $event->remarks) }}</textarea>
+            </label>
+
+            <label>
+                Event Visibility <span style="color:red;">*</span>
+                <select name="visibility" required>
+                    <option value="">-- Select Visibility --</option>
+                    <option value="public" {{ old('visibility', $event->visibility) == 'public' ? 'selected' : '' }}>Public (Everyone)</option>
+                    <option value="private" {{ old('visibility', $event->visibility) == 'private' ? 'selected' : '' }}>Private (University Only)</option>
+                </select>
             </label>
         </fieldset>
 

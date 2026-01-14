@@ -26,6 +26,7 @@ class Event extends Model
         'fee',                   // Fee
         'remarks',               // Remarks/notes (optional)
         'posters',               // JSON array for 1–4 images
+        'visibility',            // Visibility: public or private (university only)
         'user_id',
     ];
 

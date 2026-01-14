@@ -3,6 +3,6 @@
         © {{ date('Y') }} Event Nexus. All rights reserved.
     </p>
     <p style="margin: 5px 0 0 0; font-size: 0.9rem; color: #999;">
-        Developed by CHAN ZHI JIE (BI23110228)
+        Developed by Nexus Team
     </p>
 </footer>

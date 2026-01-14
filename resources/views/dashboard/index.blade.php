@@ -6,7 +6,8 @@
 </head>
 <body>
 
-@include('includes.loginTopNav')
+@extends('layouts.app')
+
 
 <section class="dashboard-section-content">
 

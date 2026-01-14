@@ -35,31 +35,71 @@
     </section>
     <section class="listing">
       <h2>Event Listing</h2>
-        <div>
-		      <table border="1" align="center">
-		        <tr>
-		          <td>All</td>
-		          <td>Filter 1</td>
-		          <td>Filter 2</td>
-		          <td>Filter 3</td>
-		        </tr>
-		      </table>
-		    </div>
-		    <div>
-		      <table width="100%" border="1" id="event_table">
-		        <tr>
-              <td>Event 1<img src="{{ asset('images/event1.jpg') }}" style="width:100%"></td>
-		          <td>Event 2<img src="{{ asset('images/event2.jpg') }}" style="width:100%"></td>
-		          <td>Event 3<img src="{{ asset('images/event3.jpg') }}" style="width:100%"></td>
-		        </tr>
-		        <tr>
-		          <td>img</td>
-		          <td>img</td>
-		          <td>img</td>
-		        </tr>
-		      </table>
-		    </div>
-        </section>
+      
+      <div class="filter-section">
+        <button class="filter-btn active" data-type="all">All Events</button>
+        <button class="filter-btn" data-type="Workshop">Workshop</button>
+        <button class="filter-btn" data-type="Seminar">Seminar</button>
+        <button class="filter-btn" data-type="Competition">Competition</button>
+        <button class="filter-btn" data-type="Festival">Festival</button>
+        <button class="filter-btn" data-type="Sport">Sport</button>
+        <button class="filter-btn" data-type="Course">Course</button>
+      </div>
+      
+      <div class="events-carousel-container">
+        <button class="carousel-btn carousel-btn-left" id="prevBtn">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        
+        <div class="carousel-wrapper">
+          <div class="carousel-events" id="carouselEvents">
+            @forelse($events as $event)
+
+              <div class="carousel-event-card" data-event-type="{{ $event->type }}">
+                <div class="event-card" style="position: relative; cursor: not-allowed;">
+                  @if($event->posters)
+                    @php
+                      $poster = is_array($event->posters) ? $event->posters[0] : $event->poster;
+                    @endphp
+                    <div class="event-image-wrapper">
+                      <img src="{{ asset('storage/' . $poster) }}" alt="{{ $event->title }}" class="event-image">
+                      <div class="event-hover-overlay">
+                        <p>Login to join this event</p>
+                      </div>
+                    </div>
+                  @else
+                    <div class="event-image-placeholder">No Image</div>
+                  @endif
+                  
+                  <div class="event-content">
+                    <h3>{{ $event->name }}</h3>
+                    <p class="event-venue">
+                      <i class="fas fa-map-marker-alt"></i> {{ $event->venue }}
+                    </p>
+                    <p class="event-date">
+                      <i class="fas fa-calendar"></i> {{ \Carbon\Carbon::parse($event->date)->format('M d, Y') }}
+                    </p>
+                    <p class="event-time">
+                      <i class="fas fa-clock"></i> {{ \Carbon\Carbon::parse($event->time)->format('h:i A') }}
+                    </p>
+                    <p class="event-type">
+                      <span class="badge">{{ $event->type }}</span>
+                    </p>
+                  </div>
+                  
+                </div>
+              </div>
+            @empty
+              <p style="text-align: center; width: 100%;">No events available at the moment.</p>
+            @endforelse
+          </div>
+        </div>
+        
+        <button class="carousel-btn carousel-btn-right" id="nextBtn">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    </section>
   </main>
 
   @include('includes.footer')
@@ -69,10 +109,81 @@
     </footer> -->
 
   <script>
-    // Toggle mobile menu
-    const menuIcon = document.getElementById('menu-icon');
-    const navLinks = document.getElementById('nav-links');
-    menuIcon.onclick = () => navLinks.classList.toggle('active');
+    // Filter functionality
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    let currentFilter = 'all';
+
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        // Update active button
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        // Set current filter
+        currentFilter = btn.getAttribute('data-type');
+        
+        // Reset carousel position
+        currentIndex = 0;
+        
+        // Show filtered events
+        showEvents();
+      });
+    });
+
+    // Carousel functionality
+    const carouselEvents = document.getElementById('carouselEvents');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    let currentIndex = 0;
+
+    function getVisibleCards() {
+      const allCards = document.querySelectorAll('.carousel-event-card');
+      if (currentFilter === 'all') {
+        return Array.from(allCards);
+      }
+      return Array.from(allCards).filter(card => {
+        const eventType = card.getAttribute('data-event-type');
+        return eventType === currentFilter;
+      });
+    }
+
+    function showEvents() {
+      const allCards = document.querySelectorAll('.carousel-event-card');
+      const visibleCards = getVisibleCards();
+      const totalVisibleCards = visibleCards.length;
+      
+      // Hide all cards
+      allCards.forEach(card => card.style.display = 'none');
+      
+      // Show 3 cards starting from currentIndex
+      for (let i = currentIndex; i < currentIndex + 3 && i < totalVisibleCards; i++) {
+        visibleCards[i].style.display = 'block';
+      }
+      
+      // Disable prev button if at start
+      prevBtn.disabled = currentIndex === 0;
+      
+      // Disable next button if at end
+      nextBtn.disabled = currentIndex + 3 >= totalVisibleCards;
+    }
+
+    prevBtn.addEventListener('click', () => {
+      if (currentIndex > 0) {
+        currentIndex -= 3;
+        showEvents();
+      }
+    });
+
+    nextBtn.addEventListener('click', () => {
+      const visibleCards = getVisibleCards();
+      if (currentIndex + 3 < visibleCards.length) {
+        currentIndex += 3;
+        showEvents();
+      }
+    });
+
+    // Initialize carousel on page load
+    showEvents();
   </script>
 </body>
 </html>

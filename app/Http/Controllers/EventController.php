@@ -12,10 +12,35 @@ use Illuminate\Support\Facades\Storage;
 class EventController extends Controller
 {
     // Show all events (e.g. event listing)
-    public function index()
+    public function index(Request $request)
     {
-        $events = Event::latest()->paginate(10);
-        return view('events.index', compact('events'));
+        $search = $request->input('search');
+        $query = Event::latest();
+        
+        // Filter by visibility: public events always shown, private events only to staff/student
+        if (!Auth::check()) {
+            // Non-authenticated users: only see public events
+            $query->where('visibility', 'public');
+        } else {
+            // Authenticated users
+            $user = Auth::user();
+            if ($user->category === 'public') {
+                // Public category users: only see public events
+                $query->where('visibility', 'public');
+            } else {
+                // Staff and student users: see both public and private events
+                // (no visibility filter needed)
+            }
+        }
+        
+        if($search) {
+            $query->where('name', 'like', '%' . $search . '%')
+                  ->orWhere('description', 'like', '%' . $search . '%')
+                  ->orWhere('venue', 'like', '%' . $search . '%');
+        }
+        
+        $events = $query->paginate(12);
+        return view('events.index', compact('events', 'search'));
     }
 
     // Show create event form
@@ -27,6 +52,18 @@ class EventController extends Controller
     // Show event details
     public function show(Event $event)
     {
+        // Check visibility: private events only for staff/student, not public category
+        if ($event->visibility === 'private') {
+            if (!Auth::check()) {
+                return redirect()->route('events.index')->with('error', 'This event is only available to university members.');
+            }
+            
+            $user = Auth::user();
+            if ($user->category === 'public') {
+                return redirect()->route('events.index')->with('error', 'This event is only available to staff and students.');
+            }
+        }
+        
         return view('events.show', compact('event'));
     }
 
@@ -48,7 +85,8 @@ class EventController extends Controller
             'max_participants' => 'nullable|integer|min:1',
             'fee' => 'required|string',
             'remarks' => 'nullable|string',
-            'posters' => 'nullable|array|max:4',
+            'visibility' => 'required|in:public,private',
+            'posters' => 'required|array|min:1|max:4',
             'posters.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -166,11 +204,20 @@ class EventController extends Controller
             ->with('success', 'Event deleted successfully!');
     }
 
-    public function myEvents()
-        {
-            $events = Auth::user()->organizedEvents()->latest()->get();
-            return view('events.myEvents', compact('events'));
+    public function myEvents(Request $request)
+    {
+        $search = $request->input('search');
+        $query = Auth::user()->organizedEvents()->latest();
+        
+        if($search) {
+            $query->where('name', 'like', '%' . $search . '%')
+                  ->orWhere('description', 'like', '%' . $search . '%')
+                  ->orWhere('venue', 'like', '%' . $search . '%');
         }
+        
+        $events = $query->get();
+        return view('events.myEvents', compact('events', 'search'));
+    }
 
     public function register(Request $request)
     {
@@ -181,6 +228,16 @@ class EventController extends Controller
             'email' => 'required|email',
             'payment' => 'required|numeric|min:0',
         ]);
+
+        // Get event and check visibility
+        $event = Event::find($data['event_id']);
+        
+        if ($event->visibility === 'private') {
+            $user = Auth::user();
+            if ($user->category === 'public') {
+                return redirect()->back()->with('error', 'This event is only available to staff and students.');
+            }
+        }
 
         // Prevent duplicate registration
         $alreadyRegistered = EventRegistration::where('event_id', $data['event_id'])
@@ -226,5 +283,39 @@ class EventController extends Controller
             ->get();
         
         return view('registrations.my', compact('registrations'));
+    }
+
+    // View event participants
+    public function participants(Event $event)
+    {
+        // Check if user is the event organizer
+        if ($event->user_id !== Auth::id()) {
+            return redirect()->route('events.index')->with('error', 'You do not have permission to view this event\'s participants.');
+        }
+
+        // Get all registrations for this event
+        $registrations = $event->registrations()->latest()->paginate(perPage: 10);
+        
+        return view('events.participants', compact('event', 'registrations'));
+    }
+
+    // Mark participant attendance
+    public function markAttendance(Event $event, EventRegistration $registration)
+    {
+        // Check if user is the event organizer
+        if ($event->user_id !== Auth::id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        // Verify the registration belongs to this event
+        if ($registration->event_id !== $event->id) {
+            return response()->json(['error' => 'Registration does not belong to this event'], 422);
+        }
+
+        // Toggle attendance status
+        $newStatus = $registration->status === 'attended' ? 'registered' : 'attended';
+        $registration->update(['status' => $newStatus]);
+
+        return response()->json(['status' => $newStatus, 'message' => 'Attendance updated successfully']);
     }
 }

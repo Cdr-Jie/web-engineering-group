@@ -23,3 +23,22 @@
         </ul>
     </div>
 </nav>
+
+<script>
+    const menuIcon = document.getElementById('menu-icon');
+    const navLinks = document.getElementById('nav-links');
+
+    if (menuIcon) {
+        menuIcon.addEventListener('click', function() {
+            navLinks.classList.toggle('active');
+        });
+
+        // Close menu when a link is clicked
+        const links = navLinks.querySelectorAll('a');
+        links.forEach(link => {
+            link.addEventListener('click', function() {
+                navLinks.classList.remove('active');
+            });
+        });
+    }
+</script>

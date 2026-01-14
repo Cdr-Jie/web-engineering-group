@@ -27,7 +27,7 @@ return new class extends Migration
         $table->integer('max_participants')->nullable();
         $table->string('fee'); // "Free" or amount in RM
         $table->text('remarks')->nullable();
-        $table->json('posters'); // array of image filenames
+        $table->json('posters')->nullable(false); // array of image filenames - required
         $table->timestamps();
         $table->foreignId('user_id')
               ->constrained()

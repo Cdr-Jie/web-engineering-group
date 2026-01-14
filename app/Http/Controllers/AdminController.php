@@ -86,8 +86,9 @@ class AdminController extends Controller
         $totalEvents = Event::count();
         $totalRegistrations = EventRegistration::count();
         $adminCount = Admin::count();
+        $admin = Auth::user();
 
-        return view('admin.dashboard', compact('totalUsers', 'totalEvents', 'totalRegistrations', 'adminCount'));
+        return view('admin.dashboard', compact('totalUsers', 'totalEvents', 'totalRegistrations', 'adminCount', 'admin'));
     }
 
     // Show all admins
@@ -134,7 +135,19 @@ class AdminController extends Controller
             'email' => 'required|email|unique:admins,email,' . $admin->id,
             'phone' => 'nullable|string|max:20',
             'role' => 'required|in:super_admin,admin,moderator',
+            'password' => 'nullable|string|min:8|confirmed',
         ]);
+
+        // Only update password if provided
+        if (!empty($data['password'])) {
+            $data['password'] = bcrypt($data['password']);
+        } else {
+            // Remove password from data if not provided
+            unset($data['password']);
+        }
+
+        // Remove confirmation field from data
+        unset($data['password_confirmation']);
 
         $admin->update($data);
 
@@ -215,10 +228,19 @@ class AdminController extends Controller
     }
 
     // Show all events
-    public function events()
+    public function events(Request $request)
     {
-        $events = Event::withCount('registrations')->latest()->paginate(10);
-        return view('admin.events', compact('events'));
+        $search = $request->input('search');
+        $query = Event::withCount('registrations')->latest();
+        
+        if($search) {
+            $query->where('name', 'like', '%' . $search . '%')
+                  ->orWhere('description', 'like', '%' . $search . '%')
+                  ->orWhere('venue', 'like', '%' . $search . '%');
+        }
+        
+        $events = $query->paginate(10);
+        return view('admin.events', compact('events', 'search'));
     }
 
     // Show create event form
@@ -245,6 +267,7 @@ class AdminController extends Controller
             'max_participants' => 'nullable|integer|min:1',
             'fee' => 'required|string',
             'remarks' => 'nullable|string',
+            'visibility' => 'required|in:public,private',
             'posters' => 'nullable|array|max:4',
             'posters.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
@@ -303,6 +326,7 @@ class AdminController extends Controller
             'registration_close' => 'required|date|before_or_equal:date',
             'max_participants' => 'nullable|integer|min:1',
             'fee' => 'nullable|numeric|min:0',
+            'visibility' => 'required|in:public,private',
         ]);
 
         $event->update($data);

@@ -1,0 +1,179 @@
+.participants-container {
+    margin: 0;
+    padding: 0;
+}
+
+.participants-wrapper {
+    width: 100%;
+    background: #fff;
+    padding: 30px;
+    border-radius: 0;
+    box-shadow: none;
+    min-height: 100vh;
+}
+
+.participants-header {
+    margin-bottom: 20px;
+}
+
+.back-button {
+    display: inline-block;
+    margin-bottom: 20px;
+}
+
+.summary-box {
+    background: #f0fdfb;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    border-left: 4px solid #00d9a3;
+}
+
+.summary-box h3 {
+    color: #00d9a3;
+    margin-top: 0;
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.summary-item p:first-child {
+    margin: 0;
+    color: #666;
+}
+
+.summary-item p:last-child {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 5px 0;
+    color: #00d9a3;
+}
+
+.summary-item p:last-child.capacity {
+    color: #1aa573;
+}
+
+.participants-table-container {
+    overflow-x: auto;
+    margin-bottom: 30px;
+    width: 100%;
+}
+
+.participants-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.participants-table thead tr {
+    background: #f9f9f9;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.participants-table th {
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+    color: #333;
+}
+
+.participants-table tbody tr {
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.participants-table tbody tr:hover {
+    background: #f5f5f5;
+}
+
+.participants-table td {
+    padding: 12px;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-badge.attended {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.status-badge.registered {
+    background: #bfdbfe;
+    color: #1e40af;
+}
+
+.status-badge.cancelled {
+    background: #fee2e2;
+    color: #7f1d1d;
+}
+
+.attendance-btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.attendance-btn.marked {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.attendance-btn.unmarked {
+    background: #e0f2fe;
+    color: #0369a1;
+}
+
+.attendance-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.attendance-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 217, 163, 0.2);
+}
+
+.empty-state {
+    color: #999;
+    text-align: center;
+    padding: 20px;
+}
+
+.pagination-wrapper {
+    margin-top: 30px;
+}
+
+@media (max-width: 768px) {
+    .participants-wrapper {
+        padding: 20px;
+    }
+
+    .summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .participants-table {
+        font-size: 14px;
+    }
+
+    .participants-table th,
+    .participants-table td {
+        padding: 8px;
+    }
+
+    .attendance-btn {
+        padding: 4px 8px;
+        font-size: 11px;
+    }
+}

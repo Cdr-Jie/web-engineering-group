@@ -11,6 +11,7 @@ class EventRegistration extends Model
         'name',
         'email',
         'payment',
+        'status',
     ];
 
     // Relationships

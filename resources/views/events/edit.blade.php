@@ -127,19 +127,27 @@
                 Fee <span style="color:red;">*</span>
                 <input type="text" name="fee" value="{{ old('fee', $event->fee) }}" placeholder="e.g., Free or RM 50" required>
             </label>
-
             <label>
                 Remarks
                 <textarea name="remarks" rows="3">{{ old('remarks', $event->remarks) }}</textarea>
+            </label>
+
+            <label>
+                Event Visibility *
+                <select name="visibility" required>
+                    <option value="">-- Select Visibility --</option>
+                    <option value="public" {{ old('visibility', $event->visibility) == 'public' ? 'selected' : '' }}>Public (Everyone)</option>
+                    <option value="private" {{ old('visibility', $event->visibility) == 'private' ? 'selected' : '' }}>Private (University Only)</option>
+                </select>
             </label>
         </fieldset>
 
         
 
             <label>
-                Upload New Posters (Optional)
-                <input type="file" name="posters[]" multiple accept="image/*">
-                <small>Upload 1-4 images. If you upload new posters, they will replace the existing ones.</small>
+                Upload New Posters
+                <input type="file" name="posters[]" multiple accept="image/*" required>
+                <small>At least 1 poster is required. Upload 1-4 images. New posters will be added to existing ones.</small>
             </label>
         </fieldset>
 
