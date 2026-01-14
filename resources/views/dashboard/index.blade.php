@@ -34,39 +34,41 @@
             </div>
         </div>
 
-        <div class="dashboard-card">
-            <h3>📅 My Events</h3>
-            <p>Create, edit, or delete events you organize.</p>
-            <p>
-                <strong>{{ Auth::user()->organizedEvents()->count() }}</strong> event(s)
-            </p>
-            
-            @if(Auth::user()->organizedEvents()->count() > 0)
-                <div class="events-images-container">
-                    @foreach(Auth::user()->organizedEvents()->get() as $event)
-                        <a href="{{ route('events.show', $event) }}" style="text-decoration: none;">
-                            <div class="event-image-item">
-                                @if($event->posters && count($event->posters) > 0)
-                                    <img src="{{ asset('storage/' . $event->posters[0]) }}" alt="{{ $event->name }}" class="event-poster">
-                                @else
-                                    <div class="event-image-placeholder">
-                                        <p>{{ $event->name }}</p>
+        @if(Auth::user()->category !== 'public')
+            <div class="dashboard-card">
+                <h3>📅 My Events</h3>
+                <p>Create, edit, or delete events you organize.</p>
+                <p>
+                    <strong>{{ Auth::user()->organizedEvents()->count() }}</strong> event(s)
+                </p>
+                
+                @if(Auth::user()->organizedEvents()->count() > 0)
+                    <div class="events-images-container">
+                        @foreach(Auth::user()->organizedEvents()->get() as $event)
+                            <a href="{{ route('events.show', $event) }}" style="text-decoration: none;">
+                                <div class="event-image-item">
+                                    @if($event->posters && count($event->posters) > 0)
+                                        <img src="{{ asset('storage/' . $event->posters[0]) }}" alt="{{ $event->name }}" class="event-poster">
+                                    @else
+                                        <div class="event-image-placeholder">
+                                            <p>{{ $event->name }}</p>
+                                        </div>
+                                    @endif
+                                    <div class="event-info-tooltip">
+                                        <strong>{{ $event->name }}</strong>
+                                        <p>📅 {{ $event->date->format('d M Y') }}</p>
+                                        <p>📍 {{ substr($event->venue, 0, 30) }}</p>
                                     </div>
-                                @endif
-                                <div class="event-info-tooltip">
-                                    <strong>{{ $event->name }}</strong>
-                                    <p>📅 {{ $event->date->format('d M Y') }}</p>
-                                    <p>📍 {{ substr($event->venue, 0, 30) }}</p>
                                 </div>
-                            </div>
-                        </a>
-                    @endforeach
-                </div>
-            @endif
-            
-            <a href="{{ route('events.create') }}" class="btn">Create New Event</a>
-            <a href="{{ route('events.my') }}" class="btn">My Events</a>
-        </div>
+                            </a>
+                        @endforeach
+                    </div>
+                @endif
+                
+                <a href="{{ route('events.create') }}" class="btn">Create New Event</a>
+                <a href="{{ route('events.my') }}" class="btn">My Events</a>
+            </div>
+        @endif
 
         <div class="dashboard-card">
             <h3>📝 Event Registrations</h3>

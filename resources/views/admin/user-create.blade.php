@@ -1,26 +1,27 @@
 <!DOCTYPE html>
-<html lang="en"></html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Event Nexus</title>
-  @vite('resources/css/style.css')
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create User - Event Nexus</title>
+    @vite('resources/css/style.css')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
-  <!-- ======= Hero Section ======= -->
-  <header class="hero-small">
-    <div class="overlay"></div>
-    <div class="hero-content">
-    <img src="{{ asset('images/logo.jpg') }}" alt="Event Nexus Logo" class = 'logo'>
-      <h1>Event Nexus</h1>
-      <p>Organize, manage, and participate in campus events seamlessly</p>
-    </div>
-  </header>
+    <!-- ======= Hero Section ======= -->
+    <header class="hero-small">
+        <div class="overlay"></div>
+        <div class="hero-content">
+            <img src="{{ asset('images/logo.jpg') }}" alt="Event Nexus Logo" class="logo">
+            <h1>Event Nexus</h1>
+            <p>Organize, manage, and participate in campus events seamlessly</p>
+        </div>
+    </header>
+
     @include('includes.topNav')
 
     <section class="section-content">
-        <h3>Register</h3>
+        <h3>Create User</h3>
 
         {{-- Display success or error messages --}}
         @if(session('success'))
@@ -35,7 +36,7 @@
             </ul>
         @endif
 
-        <form action="{{ route('register') }}" method="POST" name="registration_form">
+        <form action="{{ route('admin.user.store') }}" method="POST" name="create_user_form">
             @csrf
 
             {{-- Category --}}
@@ -76,27 +77,20 @@
             {{-- Confirm Password --}}
             <div>
                 <label for="password_confirmation">Confirm Password</label><br>
-                <input type="password" id="password_confirmation" name="password_confirmation" required minlength="6" autocomplete="new-password" placeholder="Repeat your password">
-            </div>
-
-            {{-- Event Checkboxes --}}
-            <div>
-                <label>Recommend event about:</label><br>
-                @php
-                    $eventsOld = old('event', []);
-                @endphp
-                @foreach(['workshop','seminar','competition','festival','sport','course'] as $event)
-                    <input type="checkbox" name="event[]" value="{{ $event }}" {{ in_array($event, $eventsOld) ? 'checked' : '' }}> {{ ucfirst($event) }}<br>
-                @endforeach
+                <input type="password" id="password_confirmation" name="password_confirmation" minlength="6" autocomplete="new-password" placeholder="Repeat your password">
             </div>
 
             <div>
                 <button type="reset">Reset</button>
-                <button type="submit">Register</button>
+                <button type="submit">Create User</button>
             </div>
         </form>
 
         <p id="output" style="color:red"></p>
     </section>
+
+    <footer>
+        <p>&copy; 2026 Event Nexus. All rights reserved.</p>
+    </footer>
 </body>
-@include('includes.footer')
+</html>

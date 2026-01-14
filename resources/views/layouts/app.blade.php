@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>CEMS</title>
+    <title>Event Nexus</title>
     @vite('resources/css/style.css')
 </head>
 <body>

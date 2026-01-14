@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\AdminController;
 
 
 Route::get('/', function () {
@@ -52,5 +53,55 @@ Route::get('/my-events', action: fn() => view('events.my'))->name('events.my');
         ->name('events.register');
     Route::delete('/events/{event}/unregister', [EventController::class, 'unregister'])
         ->name('events.unregister');
+    Route::get('/my-registrations', [EventController::class, 'myRegistrations'])->name('registrations.my');
 
-Route::get('/my-registrations', [EventController::class, 'myRegistrations'])->name('registrations.my');
+/* ==============================
+    Admin Routes
+    ============================= */
+    Route::get('/admin/login', [AdminController::class, 'showLoginForm'])->name('admin.login.form');
+    Route::post('/admin/login', [AdminController::class, 'login'])->name('admin.login');
+
+    Route::middleware('auth')->prefix('/admin')->group(function () {
+        Route::get('/', [AdminController::class, 'index'])->name('admin.dashboard');
+        Route::post('/logout', [AdminController::class, 'logout'])->name('admin.logout');
+        
+        // Admin management routes
+        Route::get('/admins', [AdminController::class, 'list'])->name('admin.list');
+        Route::get('/admins/create', [AdminController::class, 'create'])->name('admin.create');
+        Route::post('/admins', [AdminController::class, 'store'])->name('admin.store');
+        Route::get('/admins/{admin}/edit', [AdminController::class, 'edit'])->name('admin.edit');
+        Route::put('/admins/{admin}', [AdminController::class, 'update'])->name('admin.update');
+        Route::delete('/admins/{admin}', [AdminController::class, 'destroy'])->name('admin.destroy');
+        Route::get('/admins/promote', [AdminController::class, 'showPromoteForm'])->name('admin.promote.form');
+        Route::post('/admins/promote', [AdminController::class, 'promoteUserToAdmin'])->name('admin.promote');
+        
+        // User management routes
+        Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
+        Route::get('/users/create', [AdminController::class, 'createUser'])->name('admin.user.create');
+        Route::post('/users', [AdminController::class, 'storeUser'])->name('admin.user.store');
+        Route::get('/users/{user}/edit', [AdminController::class, 'editUser'])->name('admin.user.edit');
+        Route::put('/users/{user}', [AdminController::class, 'updateUser'])->name('admin.user.update');
+        Route::delete('/users/{user}', [AdminController::class, 'destroyUser'])->name('admin.user.destroy');
+        
+        // Event management routes
+        Route::get('/events', [AdminController::class, 'events'])->name('admin.events');
+        Route::get('/events/create', [AdminController::class, 'createEvent'])->name('admin.event.create');
+        Route::post('/events', [AdminController::class, 'storeEvent'])->name('admin.event.store');
+        Route::get('/events/{event}/edit', [AdminController::class, 'editEvent'])->name('admin.event.edit');
+        Route::put('/events/{event}', [AdminController::class, 'updateEvent'])->name('admin.event.update');
+        Route::delete('/events/{event}', [AdminController::class, 'destroyEvent'])->name('admin.event.destroy');
+        
+        // Event registration management routes
+        Route::get('/registrations', [AdminController::class, 'registrations'])->name('admin.registrations');
+        Route::get('/registrations/create', [AdminController::class, 'createRegistration'])->name('admin.registration.create');
+        Route::post('/registrations', [AdminController::class, 'storeRegistration'])->name('admin.registration.store');
+        Route::get('/registrations/{registration}/edit', [AdminController::class, 'editRegistration'])->name('admin.registration.edit');
+        Route::put('/registrations/{registration}', [AdminController::class, 'updateRegistration'])->name('admin.registration.update');
+        Route::delete('/registrations/{registration}', [AdminController::class, 'destroyRegistration'])->name('admin.registration.destroy');
+
+        // Test route for pagination
+        Route::get('/test', function () {
+            $items = collect(range(1, 100))->paginate(10);
+            return view('admin.test', compact('items'));
+        })->name('admin.test');
+    });

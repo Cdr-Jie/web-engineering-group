@@ -7,8 +7,8 @@
         <header class="hero-small">
             <div class="overlay"></div>
             <div class="hero-content">
-            <img src="{{ asset('images/logo.jpg') }}" alt="CEMS Logo" class = 'logo'>
-            <h1>Campus Event Management System</h1>
+            <img src="{{ asset('images/logo.jpg') }}" alt="Event Nexus Logo" class = 'logo'>
+            <h1>Event Nexus</h1>
             <p>Organize, manage, and participate in campus events seamlessly</p>
             </div>
         </header>
@@ -49,9 +49,15 @@
 
             <br><br>
 
-            <div>
-                <a href="{{ route('register') }}">Don't have an account? Register here</a><br>
-                <a href="#">Forgot your password?</a>
+            <div class="login-footer">
+                <div class="login-links">
+                    <a href="{{ route('register') }}">Don't have an account? Register here</a><br>
+                    <a href="#">Forgot your password?</a>
+                </div>
+                <div class="admin-login-link">
+                    <a href="{{ route(name: 'admin.login') }}">Admin Login</a>
+                    <a href="#"></a>
+                </div>
             </div>
         </section>
 

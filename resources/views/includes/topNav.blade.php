@@ -1,6 +1,6 @@
 <nav class="navbar">
     <div class="nav-container">
-        <a href="{{ route('index') }}" class="brand">CEMS</a>
+        <a href="{{ route('index') }}" class="brand">Event Nexus</a>
         <div class="menu-icon" id="menu-icon">
             <i class="fas fa-bars"></i>
         </div>

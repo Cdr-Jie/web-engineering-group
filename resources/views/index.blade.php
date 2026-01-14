@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Campus Event Management System (CEMS)</title>
+  <title>Event Nexus</title>
   @vite('resources/css/style.css')
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
@@ -12,8 +12,8 @@
   <header class="hero">
     <div class="overlay"></div>
     <div class="hero-content">
-    <img src="{{ asset('images/logo.jpg') }}" alt="CEMS Logo" class = 'logo'>
-      <h1>Campus Event Management System</h1>
+    <img src="{{ asset('images/logo.jpg') }}" alt="Event Nexus Logo" class = 'logo'>
+      <h1>Event Nexus</h1>
       <p>Organize, manage, and participate in campus events seamlessly</p>
     </div>
   </header>
@@ -27,7 +27,7 @@
   
   <main>
     <section class="intro">
-      <h2>Welcome to CEMS</h2>
+      <h2>Welcome to Event Nexus</h2>
       <p>
         This system helps you manage and explore upcoming campus events efficiently.
         Register or log in to get started.
