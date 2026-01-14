@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\EventRegistration;
-
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -101,7 +101,7 @@ class EventController extends Controller
 
 
         // Save event
-        Event::create([
+        $event = Event::create([
             'name' => $data['name'],
             'description' => $data['description'],
             'organizer' => $data['organizer'],
@@ -118,7 +118,11 @@ class EventController extends Controller
             'remarks' => $data['remarks'] ?? null,
             'posters' => $posterPaths,
             'user_id' => Auth::id(), // ⭐ IMPORTANT
+            'visibility' => $data['visibility'],
         ]);
+
+        // Notify admins of new event creation
+        NotificationService::notifyAdminEventCreated(Auth::user(), $event);
 
         return redirect()->route('events.index')
             ->with('success', 'Event created successfully!');
@@ -249,13 +253,19 @@ class EventController extends Controller
         }
 
         // Save registration
-        EventRegistration::create([
+        $registration = EventRegistration::create([
             'event_id' => $data['event_id'],
             'user_id' => Auth::id(),
             'name' => $data['name'],
             'email' => $data['email'],
             'payment' => $data['payment'],
         ]);
+
+        // Notify user of successful registration
+        NotificationService::notifyUserEventRegistration(Auth::user(), $event);
+
+        // Notify event creator of new registration
+        NotificationService::notifyEventCreatorNewRegistration(Auth::user(), $event);
 
         return redirect()->back()->with('success', 'Registered successfully!');
     }

@@ -16,12 +16,20 @@
             <!-- Header -->
             <div class="header">
                 <h1>Admin Dashboard</h1>
-                <form action="/admin/logout" method="POST" style="display:inline;">
-                    @csrf
-                    <button type="submit" style="background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); color: white; padding: 12px 24px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(220, 38, 38, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(220, 38, 38, 0.3)'">
-                        <i class="fas fa-sign-out-alt"></i> Logout
-                    </button>
-                </form>
+                <div style="display: flex; gap: 15px; align-items: center;">
+                    <!-- Notification Bell -->
+                    <a href="/admin/notifications" style="font-size: 20px; color: #333; text-decoration: none; position: relative;" title="Notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge" id="adminNotificationBadge" style="display: none; position: absolute; top: -8px; right: -8px; background-color: #dc2626; color: white; border-radius: 50%; padding: 2px 6px; font-size: 12px; font-weight: bold;">0</span>
+                    </a>
+                    <!-- Logout Button -->
+                    <form action="/admin/logout" method="POST" style="display:inline;">
+                        @csrf
+                        <button type="submit" style="background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); color: white; padding: 12px 24px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(220, 38, 38, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(220, 38, 38, 0.3)'">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </form>
+                </div>
             </div>
 
             <!-- Admin Profile Card -->
@@ -241,7 +249,31 @@
         document.addEventListener('DOMContentLoaded', function () {
             loadDashboardLayout();
             initializeCustomizationMode();
+            loadAdminNotificationCount();
         });
+
+        // Load unread notification count for admin
+        function loadAdminNotificationCount() {
+            fetch('{{ route("notifications.unreadCount") }}', {
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const badge = document.getElementById('adminNotificationBadge');
+                if (data.unread_count > 0) {
+                    badge.textContent = data.unread_count;
+                    badge.style.display = 'inline-block';
+                } else {
+                    badge.style.display = 'none';
+                }
+            })
+            .catch(error => console.error('Error loading notification count:', error));
+        }
+
+        // Refresh notification count every 30 seconds
+        setInterval(loadAdminNotificationCount, 30000);
     </script>
 </body>
 </html>

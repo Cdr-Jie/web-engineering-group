@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use App\Services\NotificationService;
 
 class AuthController extends Controller
 {
@@ -21,27 +22,30 @@ class AuthController extends Controller
 
     // Optional: handle registration submission
     public function register(Request $request)
-{
-    $data = $request->validate([
-        'category' => 'required|in:staff,student,public',
-        'name' => 'required|string|max:255',
-        'email' => 'required|email|unique:users',
-        'phone' => 'nullable|string|max:20',
-        'password' => 'required|min:6|confirmed', // add password_confirmation input in form if you want
-        'event' => 'required|array|min:1',
-    ]);
+    {
+        $data = $request->validate([
+            'category' => 'required|in:staff,student,public',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users',
+            'phone' => 'nullable|string|max:20',
+            'password' => 'required|min:6|confirmed', // add password_confirmation input in form if you want
+            'event' => 'required|array|min:1',
+        ]);
 
-    // Create user
-    \App\Models\User::create([
-        'name' => $data['name'],
-        'email' => $data['email'],
-        'password' => bcrypt($data['password']),
-        'phone' => $data['phone'] ?? null,
-        'category' => $data['category'],
-        'events' => json_encode($data['event']), // store as JSON
-    ]);
+        // Create user
+        $user = \App\Models\User::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => bcrypt($data['password']),
+            'phone' => $data['phone'] ?? null,
+            'category' => $data['category'],
+            'events' => json_encode($data['event']), // store as JSON
+        ]);
 
-    return redirect()->route('login')->with('success', 'Account created! Please login.');
+        // Notify admins of new registration
+        NotificationService::notifyAdminUserRegistration($user);
+
+        return redirect()->route('login')->with('success', 'Account created! Please login.');
     }
 
 

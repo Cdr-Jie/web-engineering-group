@@ -5,6 +5,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\FeedbackController;
 
 
 Route::get('/', function () {
@@ -29,6 +31,15 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/dashboard', [AuthController::class, 'showDashboard'])->name('dashboard');
 
 Route::get('/events', [AuthController::class, 'showEventBoard'])->name('events');
+
+// Notification Routes
+Route::middleware('auth')->group(function () {
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{notification}/read', [NotificationController::class, 'read'])->name('notifications.read');
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
+    Route::get('/notifications/unread-count', [NotificationController::class, 'getUnreadCount'])->name('notifications.unreadCount');
+    Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
+});
 
 // Show form
 Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -58,6 +69,11 @@ Route::get('/my-events', action: fn() => view('events.my'))->name('events.my');
         ->name('events.unregister');
     Route::get('/my-registrations', [EventController::class, 'myRegistrations'])->name('registrations.my');
 
+    // Feedback Routes
+    Route::get('/events/{event}/feedback', [FeedbackController::class, 'create'])->name('feedback.create');
+    Route::post('/events/{event}/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
+    Route::get('/events/{event}/feedback/results', [FeedbackController::class, 'results'])->name('feedback.results');
+
 /* ==============================
     Admin Routes
     ============================= */
@@ -67,6 +83,9 @@ Route::get('/my-events', action: fn() => view('events.my'))->name('events.my');
     Route::middleware('auth')->prefix('/admin')->group(function () {
         Route::get('/', [AdminController::class, 'index'])->name('admin.dashboard');
         Route::post('/logout', [AdminController::class, 'logout'])->name('admin.logout');
+        
+        // Admin notifications routes
+        Route::get('/notifications', [NotificationController::class, 'adminIndex'])->name('admin.notifications');
         
         // Admin management routes
         Route::get('/admins', [AdminController::class, 'list'])->name('admin.list');

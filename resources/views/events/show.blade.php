@@ -82,6 +82,9 @@
             {{-- Only show edit/delete if user owns the event --}}
             @if($event->user_id === Auth::id())
                 <a href="{{ route('events.edit', $event) }}" class="btn" style="background: #3498db;">Edit Event</a>
+                <a href="{{ route('feedback.results', $event) }}" class="btn" style="background: #27ae60; color: white; padding: 12px 24px; font-weight: bold;">
+                    📊 View Feedback Results
+                </a>
                 <form action="{{ route('events.destroy', $event) }}" method="POST" style="display:inline;">
                     @csrf
                     @method('DELETE')
@@ -102,6 +105,20 @@
                     <button type="submit" class="btn" style="background: #e74c3c;" 
                             onclick="return confirm('Are you sure you want to unregister from this event?')">Unregister</button>
                 </form>
+                
+                {{-- Feedback Button (only if registered) --}}
+                @php
+                    $hasFeedback = \App\Models\Feedback::where('event_id', $event->id)->where('user_id', Auth::id())->exists();
+                @endphp
+                @if($hasFeedback)
+                    <button class="btn" style="background: #95a5a6; color: white; padding: 12px 24px; font-weight: bold;" disabled title="You have already submitted feedback">
+                        ✓ Feedback Submitted
+                    </button>
+                @else
+                    <a href="{{ route('feedback.create', $event) }}" class="btn" style="background: #f39c12; color: white; padding: 12px 24px; font-weight: bold;">
+                        ⭐ Rate & Give Feedback
+                    </a>
+                @endif
             @else
                 <button class="btn" style="background: #2c3e50; color: white; padding: 12px 24px; font-weight: bold;" 
                         onclick="openRegisterModal({{ $event->id }}, '{{ $event->name }}', '{{ $event->fee }}')">

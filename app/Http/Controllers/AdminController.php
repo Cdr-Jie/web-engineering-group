@@ -26,8 +26,26 @@ class AdminController extends Controller
             'password' => 'required',
         ]);
 
-        // Attempt login with admin guard (if using separate guard)
+        // Check if the email exists in admins table
+        $admin = Admin::where('email', $credentials['email'])->first();
+
+        if (!$admin) {
+            return back()->withErrors([
+                'email' => 'This account does not have admin access.',
+            ]);
+        }
+
+        // Attempt login with the admin's credentials
         if (Auth::attempt($credentials)) {
+            // Verify the logged-in user is actually an admin
+            $user = Auth::user();
+            if (!Admin::where('email', $user->email)->exists()) {
+                Auth::logout();
+                return back()->withErrors([
+                    'email' => 'This account does not have admin access.',
+                ]);
+            }
+
             $request->session()->regenerate();
             return redirect()->intended('/admin');
         }

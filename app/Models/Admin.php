@@ -16,10 +16,19 @@ class Admin extends Authenticatable
         'password',
         'phone',
         'role',
+        'user_id',
     ];
 
     // Hide password in JSON responses
     protected $hidden = [
         'password',
     ];
+
+    /**
+     * Get the user associated with this admin.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

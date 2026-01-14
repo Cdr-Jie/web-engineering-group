@@ -45,6 +45,11 @@ class Event extends Model
     {
         return $this->hasMany(EventRegistration::class);
     }
+
+    public function feedbacks()
+    {
+        return $this->hasMany(Feedback::class);
+    }
 }
 
 
