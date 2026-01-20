@@ -675,3 +675,71 @@ select:focus {
 .dashboard-grid.customizing .card:active {
     cursor: grabbing;
 }
+
+/* =========================================================
+   APPROVAL STATUS STYLES
+   ========================================================= */
+.status-badge {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-approved {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-rejected {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+/* Approval action buttons */
+.approval-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.btn-approve {
+    flex: 1;
+    padding: 10px;
+    background: #00d9a3;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s;
+    font-size: 13px;
+}
+
+.btn-approve:hover {
+    background: #1aa573;
+}
+
+.btn-reject {
+    flex: 1;
+    padding: 10px;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s;
+    font-size: 13px;
+}
+
+.btn-reject:hover {
+    background: #c82333;
+}

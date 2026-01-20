@@ -27,6 +27,10 @@ class Event extends Model
         'remarks',               // Remarks/notes (optional)
         'posters',               // JSON array for 1–4 images
         'visibility',            // Visibility: public or private (university only)
+        'approval_status',       // Approval status: pending, approved, rejected
+        'approved_by',           // Admin ID who approved
+        'approval_date',         // Date of approval/rejection
+        'rejection_reason',      // Reason for rejection
         'user_id',
     ];
 
@@ -35,10 +39,17 @@ class Event extends Model
         'posters' => 'array',
         'date' => 'date',
         'registration_close' => 'date',
+        'approval_date' => 'datetime',
     ];
+    
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function approvedBy()
+    {
+        return $this->belongsTo(Admin::class, 'approved_by');
     }
 
     public function registrations()

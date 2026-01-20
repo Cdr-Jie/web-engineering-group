@@ -19,17 +19,17 @@ class EventController extends Controller
         
         // Filter by visibility: public events always shown, private events only to staff/student
         if (!Auth::check()) {
-            // Non-authenticated users: only see public events
-            $query->where('visibility', 'public');
+            // Non-authenticated users: only see public AND approved events
+            $query->where('visibility', 'public')->where('approval_status', 'approved');
         } else {
             // Authenticated users
             $user = Auth::user();
             if ($user->category === 'public') {
-                // Public category users: only see public events
-                $query->where('visibility', 'public');
+                // Public category users: only see public AND approved events
+                $query->where('visibility', 'public')->where('approval_status', 'approved');
             } else {
-                // Staff and student users: see both public and private events
-                // (no visibility filter needed)
+                // Staff and student users: see both public and private approved events
+                $query->where('approval_status', 'approved');
             }
         }
         
@@ -100,7 +100,7 @@ class EventController extends Controller
         }
 
 
-        // Save event
+        // Save event with pending approval status
         $event = Event::create([
             'name' => $data['name'],
             'description' => $data['description'],
@@ -119,13 +119,14 @@ class EventController extends Controller
             'posters' => $posterPaths,
             'user_id' => Auth::id(), // ⭐ IMPORTANT
             'visibility' => $data['visibility'],
+            'approval_status' => 'pending', // Set initial status to pending
         ]);
 
         // Notify admins of new event creation
         NotificationService::notifyAdminEventCreated(Auth::user(), $event);
 
         return redirect()->route('events.index')
-            ->with('success', 'Event created successfully!');
+            ->with('success', 'Event created successfully! It is pending admin approval before being released to the public.');
     }
 
     // Show edit form

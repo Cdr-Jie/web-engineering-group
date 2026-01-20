@@ -72,7 +72,9 @@
                                 <th style="padding: 15px; text-align: left; color: #333; font-weight: 600;">Date</th>
                                 <th style="padding: 15px; text-align: left; color: #333; font-weight: 600;">Participants</th>
                                 <th style="padding: 15px; text-align: left; color: #333; font-weight: 600;">Status</th>
-                                <th style="padding: 15px; text-align: center; color: #333; font-weight: 600;">Actions</th>
+                                <th style="padding: 15px; text-align: center; color: #333; font-weight: 600;">Approve</th>
+                                <th style="padding: 15px; text-align: center; color: #333; font-weight: 600;">Edit</th>
+                                <th style="padding: 15px; text-align: center; color: #333; font-weight: 600;">Delete</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -91,32 +93,55 @@
                                         @endif
                                     </td>
                                     <td style="padding: 15px;">
-                                        @if($event->date && \Carbon\Carbon::parse($event->date)->isPast())
+                                        @if($event->approval_status === 'pending')
+                                            <span style="background-color: #fef3c7; color: #92400e; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600;">
+                                                <i class="fas fa-hourglass-half"></i> Pending Approval
+                                            </span>
+                                        @elseif($event->approval_status === 'rejected')
+                                            <span style="background-color: #fee2e2; color: #991b1b; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600;">
+                                                <i class="fas fa-times-circle"></i> Rejected
+                                            </span>
+                                        @elseif($event->date && \Carbon\Carbon::parse($event->date)->isPast())
                                             <span style="background-color: #f3f4f6; color: #666; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600;">
                                                 Completed
                                             </span>
                                         @else
                                             <span style="background-color: #dcfce7; color: #166534; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600;">
-                                                Active
+                                                <i class="fas fa-check-circle"></i> Active
                                             </span>
                                         @endif
                                     </td>
                                     <td style="padding: 15px; text-align: center;">
-                                        <a href="/admin/events/{{ $event->id }}/edit" class="btn-small" style="display:inline-block; background-color:#00d9a3; color:white; padding: 8px 12px; border-radius: 5px; text-decoration: none; font-size: 12px; margin-right: 8px; transition: background-color 0.3s;">
-                                            <i class="fas fa-edit"></i> Edit
+                                        @if($event->approval_status === 'pending')
+                                            <form action="{{ route('admin.approve.event', $event) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to approve this event?');">
+                                                @csrf
+                                                @method('PUT')
+                                                <button type="submit" class="btn-small" style="display:inline-block; background-color:#ffc107; color:#fff; padding: 8px 12px; border-radius: 5px; border: none; text-decoration: none; font-size: 12px; cursor: pointer; transition: background-color 0.3s;" title="Approve event">
+                                                    <i class="fas fa-check"></i>
+                                                </button>
+                                            </form>
+                                        @else
+                                            <span style="color: #ccc; font-size: 12px;">—</span>
+                                        @endif
+                                    </td>
+                                    <td style="padding: 15px; text-align: center;">
+                                        <a href="/admin/events/{{ $event->id }}/edit" class="btn-small" style="display:inline-block; background-color:#00d9a3; color:white; padding: 8px 12px; border-radius: 5px; text-decoration: none; font-size: 12px; transition: background-color 0.3s;" title="Edit event">
+                                            <i class="fas fa-edit"></i>
                                         </a>
+                                    </td>
+                                    <td style="padding: 15px; text-align: center;">
                                         <form action="/admin/events/{{ $event->id }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this event?');">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" style="background-color:#dc2626; color:white; padding: 8px 12px; border-radius: 5px; border: none; font-size: 12px; cursor: pointer; transition: background-color 0.3s;">
-                                                <i class="fas fa-trash"></i> Delete
+                                            <button type="submit" style="background-color:#dc2626; color:white; padding: 8px 12px; border-radius: 5px; border: none; font-size: 12px; cursor: pointer; transition: background-color 0.3s;" title="Delete event">
+                                                <i class="fas fa-trash"></i>
                                             </button>
                                         </form>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" style="padding: 40px; text-align: center; color: #999;">
+                                    <td colspan="8" style="padding: 40px; text-align: center; color: #999;">
                                         No events found.
                                     </td>
                                 </tr>

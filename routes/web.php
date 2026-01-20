@@ -10,7 +10,7 @@ use App\Http\Controllers\FeedbackController;
 
 
 Route::get('/', function () {
-    $events = \App\Models\Event::where('visibility', 'public')->get();
+    $events = \App\Models\Event::where('visibility', 'public')->where('approval_status', 'approved')->get();
     return view('index', ['events' => $events]);
 }) -> name('index');
 
@@ -120,4 +120,9 @@ Route::get('/my-events', action: fn() => view('events.my'))->name('events.my');
         Route::get('/registrations/{registration}/edit', [AdminController::class, 'editRegistration'])->name('admin.registration.edit');
         Route::put('/registrations/{registration}', [AdminController::class, 'updateRegistration'])->name('admin.registration.update');
         Route::delete('/registrations/{registration}', [AdminController::class, 'destroyRegistration'])->name('admin.registration.destroy');
+        
+        // Event approval routes
+        Route::get('/approvals', [AdminController::class, 'approvals'])->name('admin.approvals');
+        Route::put('/approvals/{event}/approve', [AdminController::class, 'approveEvent'])->name('admin.approve.event');
+        Route::post('/approvals/{event}/reject', [AdminController::class, 'rejectEvent'])->name('admin.reject.event');
     });

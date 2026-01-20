@@ -96,8 +96,13 @@
                     <h3>Total Admins</h3>
                     <div class="card-value">{{ $adminCount }}</div>
                 </a>
-            </div>
 
+                <a href="/admin/approvals?status=pending" class="card card-link" draggable="true" data-card-id="approvals" style="border-left: 4px solid #ffc107;">
+                    <div class="card-icon" style="color: #ffc107;"><i class="fas fa-check-circle"></i></div>
+                    <h3>Pending Approvals</h3>
+                    <div class="card-value" style="color: #ffc107;">{{ $pendingApprovals }}</div>
+                </a>
+            </div>
             <!-- Customization Button -->
             <div style="text-align: center; margin: 30px 0;">
                 <button id="customizeBtn" class="btn" style="background: linear-gradient(135deg, #00d9a3 0%, #1aa573 100%); color: white; padding: 12px 30px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">

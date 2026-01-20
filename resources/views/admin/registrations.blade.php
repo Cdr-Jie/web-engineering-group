@@ -25,10 +25,10 @@
             </div>
 
             <!-- Filter Section -->
-            <div class="card" style="margin-bottom: 20px;">
+            <div class="filter-card" style="margin-bottom: 20px;">
                 <form method="GET" action="/admin/registrations" style="display: flex; align-items: center; gap: 15px;">
                     <label for="event-filter" style="color: #333; font-weight: 600;">Filter by Event:</label>
-                    <select name="event_id" id="event-filter" style="padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 14px; background-color: white; color: #333; cursor: pointer; min-width: 250px;">
+                    <select name="event_id" id="event-filter" style="padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 14px; background-color: white; color: #333; cursor: pointer; width: 250px; box-sizing: border-box; overflow: hidden; white-space: nowrap;">
                         <option value="">All Events</option>
                         @foreach($events as $event)
                             <option value="{{ $event->id }}" {{ $eventFilter == $event->id ? 'selected' : '' }}>

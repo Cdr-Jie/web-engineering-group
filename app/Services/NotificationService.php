@@ -95,4 +95,36 @@ class NotificationService
     {
         $user->notifications()->whereNull('read_at')->update(['read_at' => now()]);
     }
+
+    /**
+     * Notify event creator when their event is approved.
+     */
+    public static function notifyEventApproved(Admin $admin, $event)
+    {
+        if ($event->user_id) {
+            Notification::create([
+                'user_id' => $event->user_id,
+                'type' => 'event_approved',
+                'title' => 'Event Approved',
+                'message' => "Your event '{$event->name}' has been approved and is now live!",
+                'data' => ['event_id' => $event->id],
+            ]);
+        }
+    }
+
+    /**
+     * Notify event creator when their event is rejected.
+     */
+    public static function notifyEventRejected(Admin $admin, $event)
+    {
+        if ($event->user_id) {
+            Notification::create([
+                'user_id' => $event->user_id,
+                'type' => 'event_rejected',
+                'title' => 'Event Rejected',
+                'message' => "Your event '{$event->name}' has been rejected. Reason: {$event->rejection_reason}",
+                'data' => ['event_id' => $event->id],
+            ]);
+        }
+    }
 }

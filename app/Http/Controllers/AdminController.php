@@ -6,6 +6,7 @@ use App\Models\Admin;
 use App\Models\User;
 use App\Models\Event;
 use App\Models\EventRegistration;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -47,7 +48,7 @@ class AdminController extends Controller
             }
 
             $request->session()->regenerate();
-            return redirect()->intended('/admin');
+            return redirect('/admin');
         }
 
         return back()->withErrors([
@@ -104,9 +105,10 @@ class AdminController extends Controller
         $totalEvents = Event::count();
         $totalRegistrations = EventRegistration::count();
         $adminCount = Admin::count();
+        $pendingApprovals = Event::where('approval_status', 'pending')->count();
         $admin = Auth::user();
 
-        return view('admin.dashboard', compact('totalUsers', 'totalEvents', 'totalRegistrations', 'adminCount', 'admin'));
+        return view('admin.dashboard', compact('totalUsers', 'totalEvents', 'totalRegistrations', 'adminCount', 'pendingApprovals', 'admin'));
     }
 
     // Show all admins
@@ -411,5 +413,78 @@ class AdminController extends Controller
     {
         $registration->delete();
         return redirect('/admin/registrations')->with('success', 'Registration deleted successfully');
+    }
+
+    // Show pending event approvals
+    public function approvals(Request $request)
+    {
+        $status = $request->query('status', 'pending'); // pending, approved, rejected
+        $search = $request->input('search');
+        
+        $query = Event::query();
+        
+        if ($status === 'all') {
+            // Show all events with approval status
+        } else {
+            $query->where('approval_status', $status);
+        }
+        
+        if ($search) {
+            $query->where('name', 'like', '%' . $search . '%')
+                  ->orWhere('description', 'like', '%' . $search . '%')
+                  ->orWhere('organizer', 'like', '%' . $search . '%');
+        }
+        
+        $events = $query->with(['user', 'approvedBy'])->latest()->paginate(10);
+        return view('admin.approvals', compact('events', 'status', 'search'));
+    }
+
+    // Approve an event
+    public function approveEvent(Event $event)
+    {
+        // Get the admin ID from the current authenticated admin
+        $admin = Admin::where('email', Auth::user()->email)->first();
+        
+        if (!$admin) {
+            return redirect()->back()->with('error', 'Admin record not found.');
+        }
+
+        $event->update([
+            'approval_status' => 'approved',
+            'approved_by' => $admin->id,
+            'approval_date' => now(),
+        ]);
+
+        // Notify the event creator
+        NotificationService::notifyEventApproved($admin, $event);
+
+        return redirect()->back()->with('success', 'Event approved successfully!');
+    }
+
+    // Reject an event
+    public function rejectEvent(Request $request, Event $event)
+    {
+        $data = $request->validate([
+            'rejection_reason' => 'required|string|max:500',
+        ]);
+
+        // Get the admin ID from the current authenticated admin
+        $admin = Admin::where('email', Auth::user()->email)->first();
+        
+        if (!$admin) {
+            return redirect()->back()->with('error', 'Admin record not found.');
+        }
+
+        $event->update([
+            'approval_status' => 'rejected',
+            'approved_by' => $admin->id,
+            'approval_date' => now(),
+            'rejection_reason' => $data['rejection_reason'],
+        ]);
+
+        // Notify the event creator of rejection
+        NotificationService::notifyEventRejected($admin, $event);
+
+        return redirect()->back()->with('success', 'Event rejected successfully!');
     }
 }
